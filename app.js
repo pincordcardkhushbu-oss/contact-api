@@ -1,29 +1,33 @@
-const express = require('express')
-const app = express()
+const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const dns = require('dns');
-const userRoute = require('./routes/user')
-const contactRoute = require('./routes/contact')
+
 require('dotenv').config();
 
-// Set DNS servers to Google DNS to resolve SRV records
+const userRoute = require('./routes/user');
+const contactRoute = require('./routes/contact');
+
+const app = express();
+
+// DNS fix for MongoDB SRV
 dns.setServers(['8.8.8.8', '8.8.4.4']);
 
+// ✅ built-in json parser (body-parser ki zarurat nahi)
+app.use(express.json());
+
+// ✅ MongoDB connect
 mongoose.connect(process.env.MONGO_URI)
-.then(res=>{console.log("connected to database")})
-.catch(err=>{console.log(err)})
+  .then(() => console.log("✅ connected to database"))
+  .catch(err => console.log(err));
 
-app.use(bodyParser.json())
+// routes
+app.use('/user', userRoute);
+app.use('/contact', contactRoute);
 
-app.use('/user',userRoute)
-app.use('/contact',contactRoute)
+// 404
+app.use('*', (req, res) => {
+  res.status(404).json({ msg: 'bad request' });
+});
 
-
-app.use('*',(req,res)=>{
-    res.status(404).json({
-        msg:'bad request'
-    })
-})
-
+// ⭐ VERY IMPORTANT
 module.exports = app;
