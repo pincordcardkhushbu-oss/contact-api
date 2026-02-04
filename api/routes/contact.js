@@ -1,8 +1,8 @@
 const express = require('express')
 const router = express.Router();
-const Contact = require('../model/contact')
+const Contact = require('../../model/contact')
 const mongoose = require('mongoose')
-const checkAuth = require('../middleware/checkAuth')
+const checkAuth = require('../../middleware/checkAuth')
 const jwt = require('jsonwebtoken')
 
 //add contact
